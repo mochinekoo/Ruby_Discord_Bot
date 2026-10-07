@@ -1,24 +1,17 @@
 # frozen_string_literal: true
+
 require 'discordrb'
 require 'dotenv/load'
+require 'libui'
+require_relative 'bot_manager'
+require_relative 'window_manager'
 
-bot = Discordrb::Bot.new token: ENV['BOT_TOKEN']
-bot.register_application_command(:now, '現在時刻を取得するコマンド')
+def main
+  windowThread = Thread.new do
+    WindowManager.init if ENV['WINDOW_MODE']
+  end
 
-bot.application_command(:now) do |event|
-  today = Time.now
-  text = today.year.to_s + "/" + today.month.to_s + "/" + today.day.to_s + " " + today.hour.to_s + ":" + today.min.to_s + ":" + today.sec.to_s
-
-  embed = Discordrb::Webhooks::Embed.new(
-    title: '現在の時刻',
-    description: text,
-    color: 0xFFFFFF
-  )
-  event.respond(embeds: [embed])
+  BotManager.init
 end
 
-bot.message(content: 'Ping!') do |event|
-  event.respond 'Pong!'
-end
-
-bot.run
+main if __FILE__ == $PROGRAM_NAME

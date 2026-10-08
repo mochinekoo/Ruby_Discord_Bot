@@ -4,6 +4,10 @@ class BotManager
 
   @bot = Discordrb::Bot.new token: ENV['BOT_TOKEN']
 
+  class << self
+    attr_reader :bot
+  end
+
   def self.init()
     @bot.register_application_command(:now, '現在時刻を取得するコマンド')
 
